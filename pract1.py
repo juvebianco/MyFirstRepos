@@ -8,7 +8,7 @@ Created on Thu Mar  2 17:03:19 2017
 
 import csv
 import math
-
+""" Leemos los ficheros """
 fichero_peliculas = csv.reader(open('movie-titles.csv', 'rb'))
 
 peliculas = dict()
@@ -43,6 +43,9 @@ for index, row in enumerate(fichero_ratings):
 TF = dict()
 IDF = dict()
 perfilProducto = dict()
+perfilProductoPrima = dict()
+perfilUsuario = dict()
+w=dict()
 
 
 print "Hemos obtenido %s peliculas" %(len(peliculas))  
@@ -58,12 +61,13 @@ def rellenarTF():
         else:
             TF[j]=1
 
-    for i in peliculas:
-        for a in tags:
-            if (i,a) not in TF:
-                TF[(i,a)]= 0
     return
 
+"""    for i in peliculas:
+        for a in tags:
+            if (i,a) not in TF:
+                TF[(i,a)]= 0 """
+                
 def rellenarIDF():
     for i in tags:
         count = 0
@@ -81,7 +85,42 @@ def rellenarPerfilProducto():
         for j in tags:
             perfilProducto[(i,j)] = TF[(i,j)] * IDF[j]
     return
+
+def normalizarPerfilProducto(): 
+    for i in peliculas:
+        count = 0
+        for j in tags:
+            count = count + (perfilProducto[(i,j)] ** 2)
+        for k in tags:
+            perfilProductoPrima[(i,k)]=perfilProducto[(i,k)] / (count**0.5)
+    return
+    
+def calculoW():
+    for i in usuarios:
+        media = 0
+        count = 0
+        for j in ratings:
+            if j[0] == i:
+                media = media + ratings[j]
+                count = count + 1
+        media=media/count
+        
+        for k in peliculas:
+            w[(i,k)] = ratings[(i,k)] - media
+    return
+    
+def rellenarPerfilUsuario():
+    for i in usuarios:
+        for j in tags:
+            suma = 0
+            for k in peliculas:
+                suma = suma + (perfilProductoPrima[(k,j)] * w[(i,k)])
+            perfilUsuario[(i,j)] = suma
+    return
     
 rellenarTF()
 rellenarIDF()    
 rellenarPerfilProducto()
+normalizarPerfilProducto()
+calculoW()
+rellenarPerfilUsuario()
