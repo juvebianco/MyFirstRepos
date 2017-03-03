@@ -30,25 +30,23 @@ tags = dict()
 for index, row in enumerate(fichero_tags):
     etiquetas +=[(row[0],row[1])]
     tags[row[1]] = ""
-    
+
+fichero_ratings = csv.reader(open('rs-cour-dataset/ratings.csv', 'rb'))
+
+ratings = dict()
+
+for index, row in enumerate(fichero_ratings):
+    ratings[(row[0],row[1])] = row[2]   
 """
-usuarios = []
-etiquetas = [(1,"romantica"),(2,"comedia"),(1,"terror"),(1,"romantica")]
-rating = []
-
-tags = []
-
 TF = dict()
-
-for a in etiquetas:
-    text = a[1]
-
-    if text not in tags:
-        tags += [a[1]]
+"""
 
 print "Hemos obtenido %s peliculas" %(len(peliculas))  
 print "Hemos obtenido %s etiquetas" %(len(tags)) 
 print "Hemos obtenido %s opiniones" %(len(etiquetas)) 
+print "Hemos obtenido %s opiniones distintas" %(len(tags)) 
+print "Hemos obtenido %s ratings" %(len(ratings))
+"""
 def rellenarTF():
     for j in etiquetas:
         if TF.has_key(j):
@@ -64,8 +62,9 @@ def rellenarTF():
 rellenarTF()    
 print tags
 print TF
-"""
+
 print len(peliculas)
 print len(usuarios)
 print len(etiquetas)
 print len(tags)
+"""
