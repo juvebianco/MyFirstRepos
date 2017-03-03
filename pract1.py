@@ -5,43 +5,36 @@ Created on Thu Mar  2 17:03:19 2017
 
 @author: manugtorres
 """
-peliculas = [1,2,3]
+peliculas = [(1,"batman"),(2,"pretty woman"),(3,"beatlejuece")]
 usuarios = []
 etiquetas = [(1,"romantica"),(2,"comedia"),(1,"terror"),(1,"romantica")]
 rating = []
 
-tags = dict()
+tags = []
 
 TF = dict()
 
-tags = {
-    (1,"a"):3,
-    (1,"b"):5,
-    (2,"a"):1,
-    (3,"a"):6    
-}
+for a in etiquetas:
+    text = a[1]
 
-for a,b in tags.items():
-    for c in a[1]:
-        print "(%s, %s) - > %s" %(a[0],c,b)
-        
-if tags.has_key((1,"a")):
-    tags[(1,"a")]= tags.get((1,"a"))+1
-    print "si"
-    print tags.get((1,"a"))
-else:
-    print "no"
-    
+    if text not in tags:
+        tags += [a[1]]
+
+print "Hemos obtenido %s peliculas" %(len(peliculas))  
+print "Hemos obtenido %s etiquetas" %(len(tags)) 
+print "Hemos obtenido %s opiniones" %(len(etiquetas)) 
 def rellenarTF():
+    for j in etiquetas:
+        if TF.has_key(j):
+            TF[j]= TF.get(j)+1
+        else:
+            TF[j]=1
+
     for i in peliculas:
-        for j in etiquetas:
-            if i == j[0]:
-                if TF.has_key((i,j[1])):
-                    TF[(i,j[1])]= TF.get((i,j[1]))+1
-                else:
-                    TF[(i,j[1])]=1
-            else:
-                TF[(i,j[1])]=0
+        for a in tags:
+            if (i[0],a) not in TF:
+                TF[(i[0],a)]=0
     return
 rellenarTF()    
+print tags
 print TF
