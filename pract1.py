@@ -5,7 +5,33 @@ Created on Thu Mar  2 17:03:19 2017
 
 @author: manugtorres
 """
-peliculas = [(1,"batman"),(2,"pretty woman"),(3,"beatlejuece")]
+
+import csv
+
+fichero_peliculas = csv.reader(open('rs-cour-dataset/movie-titles.csv', 'rb'))
+
+peliculas = dict()
+
+for index, row in enumerate(fichero_peliculas):
+    peliculas[row[0]] = row[1]
+
+fichero_user = csv.reader(open('rs-cour-dataset/users.csv', 'rb'))
+
+usuarios = dict()
+
+for index, row in enumerate(fichero_user):
+    usuarios[row[0]] = row[1]
+    
+fichero_tags = csv.reader(open('rs-cour-dataset/movie-tags.csv', 'rb'))
+
+etiquetas = []
+tags = dict()
+
+for index, row in enumerate(fichero_tags):
+    etiquetas +=[(row[0],row[1])]
+    tags[row[1]] = ""
+    
+"""
 usuarios = []
 etiquetas = [(1,"romantica"),(2,"comedia"),(1,"terror"),(1,"romantica")]
 rating = []
@@ -38,3 +64,8 @@ def rellenarTF():
 rellenarTF()    
 print tags
 print TF
+"""
+print len(peliculas)
+print len(usuarios)
+print len(etiquetas)
+print len(tags)
