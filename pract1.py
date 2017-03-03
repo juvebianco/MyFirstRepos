@@ -7,6 +7,7 @@ Created on Thu Mar  2 17:03:19 2017
 """
 
 import csv
+import math
 
 fichero_peliculas = csv.reader(open('movie-titles.csv', 'rb'))
 
@@ -25,11 +26,12 @@ for index, row in enumerate(fichero_user):
 fichero_tags = csv.reader(open('movie-tags.csv', 'rb'))
 
 etiquetas = []
-tags = dict()
+tags = []
 
 for index, row in enumerate(fichero_tags):
     etiquetas +=[(row[0],row[1])]
-    tags[row[1]] = ""
+    if row[1] not in tags:
+        tags += [row[1]]
 
 fichero_ratings = csv.reader(open('ratings.csv', 'rb'))
 
@@ -39,6 +41,8 @@ for index, row in enumerate(fichero_ratings):
     ratings[(row[0],row[1])] = row[2]   
 
 TF = dict()
+IDF = dict()
+perfilProducto = dict()
 
 
 print "Hemos obtenido %s peliculas" %(len(peliculas))  
@@ -56,10 +60,28 @@ def rellenarTF():
 
     for i in peliculas:
         for a in tags:
-            if (i[0],a) not in TF:
-                TF[(i[0],a)]=0
+            if (i,a) not in TF:
+                TF[(i,a)]= 0
     return
 
-rellenarTF()    
+def rellenarIDF():
+    for i in tags:
+        count = 0
+        for j in TF:
+            if j[1] == i:
+                if TF[j] > 0:
+                    count = count + 1
+        
+        IDF[i] = math.log10(len(peliculas)/count)
+    
+    return
 
-print len(TF)
+def rellenarPerfilProducto():
+    for i in peliculas:
+        for j in tags:
+            perfilProducto[(i,j)] = TF[(i,j)] * IDF[j]
+    return
+    
+rellenarTF()
+rellenarIDF()    
+rellenarPerfilProducto()
