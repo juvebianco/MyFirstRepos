@@ -8,6 +8,8 @@ Created on Thu Mar  2 17:03:19 2017
 
 import csv
 import math
+import operator
+
 """ Leemos los ficheros """
 fichero_peliculas = csv.reader(open('movie-titles.csv', 'rb'))
 
@@ -116,6 +118,39 @@ def rellenarPerfilUsuario():
             for k in peliculas:
                 suma = suma + (perfilProductoPrima[(k,j)] * w[(i,k)])
             perfilUsuario[(i,j)] = suma
+    return
+    
+def normalizarPerfilUsuario():
+    for i in usuarios:
+        count = 0
+        for j in tags:
+            count = count + (perfilUsuario[(i,j)] ** 2)
+        for k in tags:
+            perfilUsuarioPrima[(i,k)]=perfilUsuario[(i,k)] / (count**0.5)
+    return
+
+def vectorNoValorado(user):
+    vector = []
+    for i in peliculas:
+        if (user,i) not in ratings:
+            vector += [i]
+    return vector
+    
+def recomendacion(user):
+    cos = []
+    vec = vectorNoValorado(user)
+    for i in vec:
+    suma = 0
+    suma2 = 0
+    suma3 = 0
+        for j in tags:
+            suma = suma + (perfilUsuarioPrima[(user,i)] * perfilProductoPrima[(i,j)])
+            suma2 = suma2 + (perfilUsuarioPrima[(user,i)]**2)
+            suma3 = suma3 + (perfilProductoPrima[(i,j)]**2)
+        cos += ([i], suma /((suma2**0.5)*(suma3**0.5)))
+        
+    cos.sort(reverse=True)
+    
     return
     
 rellenarTF()
