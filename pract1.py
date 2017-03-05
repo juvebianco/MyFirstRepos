@@ -69,16 +69,15 @@ perfilProducto = [] # dict()
 perfilProductoPrima = [] #dict()
 
 w = []
-"""
-perfilUsuario = dict()
-perfilUsuarioPrima = dict()
 
+perfilUsuario = [] #dict()
 
-"""
-print "Hemos obtenido %s peliculas -- %s" %(len(peliculas),len(peliculasID))  
+perfilUsuarioPrima = [] #dict()
+
+print "Hemos obtenido %s peliculas" %(len(peliculas))  
 print "Hemos obtenido %s etiquetas" %(len(etiquetas)) 
 print "Hemos obtenido %s etiquetas distintas" %(len(tags)) 
-print "Hemos obtenido %s usuarios --- %s" %(len(usuarios),len(usersID)) 
+print "Hemos obtenido %s usuarios" %(len(usuarios)) 
 print "Hemos obtenido %s ratings" %(len(ratings))
 
 
@@ -157,12 +156,12 @@ print "PP' finished"
 #for i in range(5):
 #    print perfilProductoPrima[i]," --> ",perfilProductoPrima[i][0]," --:> ",perfilProductoPrima[i][1]
 
-#"""
+"""
 def calculoW():
     matrizW = []
     for i in ratingsID:
         matrizW+=[[i, (ratings[ratingsID.index(i)][1] - (ratings_users.get(i[0])/ratings_usersID.count(i[0])))]]
-    """
+    
     for i in usersID: #usuarios:
         media = (ratings_users.get(i)/ratings_usersID.count(i))
         for k in peliculasID:
@@ -170,69 +169,77 @@ def calculoW():
                 matrizW+=[[(i,k), (ratings[ratingsID.index((i,k))][1] - media)]]
             else: 
                 matrizW+=[[(i,k), -media]]
-                """
+    
     return
 w=calculoW()    
 for i in range(5):
     print w[i]," --> ",w[i][0]," --:> ",w[i][1]
 """
-def rellenarPerfilUsuario():
-    for i in usuarios:
-        for j in tags:
-            suma = 0
-            for k in peliculas:
-                suma = suma + (perfilProductoPrima[(k,j)] * w[(i,k)])
-            perfilUsuario[(i,j)] = suma
-    return
-    
-def normalizarPerfilUsuario():
-    for i in usuarios:
-        count = 0
-        for j in tags:
-            count = count + (perfilUsuario[(i,j)] ** 2)
-        for k in tags:
-            perfilUsuarioPrima[(i,k)]=perfilUsuario[(i,k)] / (count**0.5)
-    return
+def rellenarPerfilUsuario(i):
+    matrizPU = []
+    for j in tags2:
+        suma = 0
+        w = 0
+        media = (ratings_users.get(i)/ratings_usersID.count(i))
+        if (i,j[1]) in ratings_users:
+            w = ratings[ratingsID.index((i,j[0]))][1] - media
+        else:
+            w = -media
+        suma = suma + (perfilProductoPrima[[y[0] for y in perfilProductoPrima].index((j))][1] * w)
+        matrizPU += [[j, suma]]
+    print "PU finished"
+    return matrizPU
+#2perfilUsuario = rellenarPerfilUsuario('500')
+#print "PU finished"
+
+def normalizarPerfilUsuario(pu): 
+    matrizPerfilUsuarioPrima = []
+    cuenta = 0
+    for j in pu:
+        cuenta = cuenta + (j[1] ** 2)
+    for k in pu:
+        matrizPerfilUsuarioPrima += [[k[0],(k[1] / (cuenta**0.5))]]
+                
+    print "PU' finished"
+    return matrizPerfilUsuarioPrima
+
+#perfilUsuarioPrima = normalizarPerfilUsuario()
+#print "PU' finished"
 
 def vectorNoValorado(user):
     vector = []
-    for i in peliculas:
-        if (user,i) not in ratings:
+    for i in peliculasID:
+        if (user,i) not in ratingsID:
             vector += [i]
     return vector
     
 def recomendacion(user):
     cos = []
+    pu = rellenarPerfilUsuario(user)
+    pup = normalizarPerfilUsuario(pu)
     vec = vectorNoValorado(user)
     for i in vec:
         suma = 0
-        suma2 = 0
-        suma3 = 0
-        for j in tags:
-            suma = suma + (perfilUsuarioPrima[(user,i)] * perfilProductoPrima[(i,j)])
-            suma2 = suma2 + (perfilUsuarioPrima[(user,i)]**2)
-            suma3 = suma3 + (perfilProductoPrima[(i,j)]**2)
-        cos += ([i], suma /((suma2**0.5)*(suma3**0.5)))
+       # suma2 = 0
+       # suma3 = 0
+        for j in tags2:
+            suma = suma + (pup[[y[0] for y in pup].index((j))][1] * perfilProductoPrima[[y[0] for y in perfilProductoPrima].index((j))][1])
+        #    suma2 = suma2 + (perfilUsuarioPrima[(user,i)]**2)
+        #    suma3 = suma3 + (perfilProductoPrima[(i,j)]**2)
+        cos += [[i, suma]] # /((suma2**0.5)*(suma3**0.5)))
         
-    cos.sort(reverse=True)
+    cos.sort()
     print "Las recomendaciones para el usuario ", user, "son:"
     for a in range(10):
-        print cos[a]
+        print peliculas[peliculasID.index(cos[a][0])][1],": ",cos[a][1]
     
     return
-    
-rellenarTF()
-rellenarIDF()    
-rellenarPerfilProducto()
-normalizarPerfilProducto()
-calculoW()
-rellenarPerfilUsuario()
-normalizarPerfilUsuario()
+  
+
 
 stop = 1
 while stop > 0:
     user = input("Introduzca perfil de usuario (0 para salir): ")
     if user > 0:
-        recomendacion(user)
+        recomendacion(str(user))
     stop = user
-    """
